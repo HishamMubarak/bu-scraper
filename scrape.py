@@ -4,9 +4,32 @@ from bs4 import BeautifulSoup
 from csv import writer
 
 students = []
+
+#Change prefix of ID and range of ID below
 prefix = "15XWSB"
 start = 7000
 end = 7121
+
+#Change subject name to your subjects here
+tableHeader = [
+    "ID",
+    "Name",
+    'SB7120 INTERNAL ASSESSMENT',
+    'SB7120 THEORY-I',
+    'SB7121 INTERNAL ASSESSMENT',
+    'SB7121 THEORY-I',
+    'SB7122 INTERNAL ASSESSMENT',
+    'SB7122 THEORY-I',
+    'SB7123 INTERNAL ASSESSMENT',
+    'SB7123 THEORY-I',
+    'SB73PC INTERNAL ASSESSMENT',
+    'SB73PC PRACTICAL',
+    'SB73PD INTERNAL ASSESSMENT',
+    'SB73PD PROJECT WORK',
+    'SDC6SBINTERNAL ASSESSMENT',
+    'SDC6SB THEORY-I'
+]
+
 for num in range(start, end):
     students.append(prefix+str(num))
 allStudents = []
@@ -27,24 +50,13 @@ for index, eachId in enumerate(students):
     if soup.find(id="lblMessageBox") != None:
         print(eachId + " IS NOT REGISTERED")
     else:
-        
         results = soup.find(id="gvResults", newline='')
         if addedHeader == False:
-            addedHeader = True
-            # ADDING CELL HEADERS. ID, NAME and SUBJECT LIST
-            tableHeader = ["ID", "Name"]
-            for each in results:
-                headers = each.find("span")
-                if headers == -1:
-                    continue
-                elif headers == None:
-                    continue
-                else:
-                    tableHeader.append(headers.get_text() + " = " + each.select_one("td:nth-of-type(5)").text)
             with open("results.csv", "w") as csv_file:
                 fieldNames = tableHeader
                 writer = csv.DictWriter(csv_file, fieldnames=tableHeader)
                 writer.writeheader()
+                addedHeader = True
     
         # GETTING STUDENT DETAILS
         studentDetails = soup.find(class_="table-light-green")
@@ -59,7 +71,7 @@ for index, eachId in enumerate(students):
             row.find(id="gvResults_imgRank_"+str(rowIndex)).decompose()
             row.find(id="gvResults_lblRankDetails_"+str(rowIndex)).decompose()
 
-            eachSubject = row.select_one("td:nth-of-type(1)").find("span").text
+            eachSubject = row.select_one("td:nth-of-type(2)").text
             subType = row.select_one("td:nth-of-type(4)").text
             eachMarks = row.select_one("td:nth-of-type(5)").text
 
